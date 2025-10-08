@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>User</h1>
+<form method="post">
+  <label>Email</label>
+  <input type="email" name="email" value="{{ form.email.data or '' }}" required>
+  <label>Name</label>
+  <input type="text" name="name" value="{{ form.name.data or '' }}" required>
+  <label>Password (leave blank to keep existing)</label>
+  <input type="password" name="password" minlength="8">
+  <label>Active</label>
+  <input type="checkbox" name="active" {% if form.active.data %}checked{% endif %}>
+  <label>Role</label>
+  <select name="role_id" required>
+    {% for rid, rname in form.role_id.choices %}
+      <option value="{{ rid }}" {% if form.role_id.data == rid %}selected{% endif %}>{{ rname }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">Save</button>
+</form>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Users</h1>
+<a href="{{ url_for('main.users_create') }}">Create User</a>
+<table>
+  <thead>
+    <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Active</th><th>Actions</th></tr>
+  </thead>
+  <tbody>
+    {% for u in users %}
+    <tr>
+      <td>{{ u.id }}</td>
+      <td>{{ u.name }}</td>
+      <td>{{ u.email }}</td>
+      <td>{{ u.role.name if u.role else '-' }}</td>
+      <td>{{ 'Yes' if u.active else 'No' }}</td>
+      <td>
+        <a href="{{ url_for('main.users_edit', user_id=u.id) }}">Edit</a>
+        {% if u.active %}
+        <form style="display:inline" action="{{ url_for('main.users_deactivate', user_id=u.id) }}" method="post">
+          <button type="submit">Deactivate</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

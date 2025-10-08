@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Login</h1>
+<form method="post">
+  <label>Email</label>
+  <input type="email" name="email" value="{{ request.form.email or '' }}" required>
+  <label>Password</label>
+  <input type="password" name="password" required minlength="8">
+  <button type="submit">Login</button>
+</form>
+{% endblock %}

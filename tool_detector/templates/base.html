@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Tool Detector</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; }
+    nav a { margin-right: 1rem; }
+    .flash { padding: .5rem 1rem; margin-bottom: 1rem; border-radius: 4px; }
+    .flash.error { background: #ffe5e5; color: #a10000; }
+    .flash.success { background: #e5ffe9; color: #007a1f; }
+    form { max-width: 500px; }
+    input, select { width: 100%; padding: .5rem; margin: .25rem 0 1rem; }
+    button { padding: .5rem 1rem; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: .5rem; text-align: left; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+    {% if current_user.is_authenticated %}
+      <a href="{{ url_for('main.users_list') }}">Users</a>
+      <a href="{{ url_for('main.roles_list') }}">Roles</a>
+      <form style="display:inline" action="{{ url_for('auth.logout') }}" method="post">
+        <button type="submit">Logout</button>
+      </form>
+    {% else %}
+      <a href="{{ url_for('auth.login') }}">Login</a>
+    {% endif %}
+  </nav>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</body>
+</html>

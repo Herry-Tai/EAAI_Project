@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Roles</h1>
+<a href="{{ url_for('main.roles_create') }}">Create Role</a>
+<table>
+  <thead>
+    <tr><th>ID</th><th>Name</th><th>Description</th><th>Permissions</th><th>Actions</th></tr>
+  </thead>
+  <tbody>
+    {% for r in roles %}
+    <tr>
+      <td>{{ r.id }}</td>
+      <td>{{ r.name }}</td>
+      <td>{{ r.description }}</td>
+      <td>{{ r.permissions | map(attribute='code') | join(', ') }}</td>
+      <td>
+        <a href="{{ url_for('main.roles_edit', role_id=r.id) }}">Edit</a>
+        <form style="display:inline" method="post" action="{{ url_for('main.roles_permissions', role_id=r.id) }}">
+          <input type="text" name="codes" placeholder="perm1, perm2" value="{{ r.permissions | map(attribute='code') | join(', ') }}">
+          <button type="submit">Set Permissions</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
