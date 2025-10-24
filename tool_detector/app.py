@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_login import LoginManager, login_required, current_user
-from models import db, User, Role, Permission
+from models import db, User, Role
 from forms import UserForm, RoleForm
 from auth import auth_bp
 from rbac import require_permission, require_role
@@ -55,14 +55,17 @@ def create_main_blueprint():
     # ----- User Management -----
     @main.route('/users')
     @login_required
-    @require_permission('user.view')
     def users_list():
-        users = User.query.all()
+        if current_user.role.name == 'admin':
+            users = User.query.all()
+        else:
+            users = [User.query.filter_by(email=current_user.email.lower()).first()]
+
         return render_template('users_list.html', users=users)
 
     @main.route('/users/create', methods=['GET', 'POST'])
     @login_required
-    @require_permission('user.create')
+    @require_role('admin')
     def users_create():
         form = UserForm(request.form)
         form.role_id.choices = [(r.id, r.name) for r in Role.query.all()]
@@ -89,7 +92,7 @@ def create_main_blueprint():
 
     @main.route('/users/<int:user_id>/edit', methods=['GET', 'POST'])
     @login_required
-    @require_permission('user.update')
+    @require_role('admin')
     def users_edit(user_id):
         user = User.query.get_or_404(user_id)
         form = UserForm(request.form, obj=user)
@@ -108,7 +111,7 @@ def create_main_blueprint():
 
     @main.route('/users/<int:user_id>/deactivate', methods=['POST'])
     @login_required
-    @require_permission('user.deactivate')
+    @require_role('admin')
     def users_deactivate(user_id):
         user = User.query.get_or_404(user_id)
         if user.id == current_user.id:
@@ -153,27 +156,6 @@ def create_main_blueprint():
             flash('Role updated', 'success')
             return redirect(url_for('main.roles_list'))
         return render_template('role_form.html', form=form)
-
-    @main.route('/roles/<int:role_id>/permissions', methods=['POST'])
-    @login_required
-    @require_role('admin')
-    def roles_permissions(role_id):
-        role = Role.query.get_or_404(role_id)
-        # Expect comma-separated permission codes in form: 'codes'
-        codes = request.form.get('codes', '')
-        # Ensure permissions exist or create
-        new_perms = []
-        for code in [c.strip() for c in codes.split(',') if c.strip()]:
-            perm = Permission.query.filter_by(code=code).first()
-            if not perm:
-                perm = Permission(code=code)
-                db.session.add(perm)
-            new_perms.append(perm)
-        db.session.flush()
-        role.permissions = new_perms
-        db.session.commit()
-        flash('Permissions updated', 'success')
-        return redirect(url_for('main.roles_list'))
 
     @main.app_errorhandler(403)
     def forbidden(_):

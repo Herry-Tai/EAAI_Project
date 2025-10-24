@@ -4,27 +4,17 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
 
-# Association table: many-to-many Role <-> Permission
-role_permissions = db.Table(
-    'role_permissions',
-    db.Column('role_id', db.Integer, db.ForeignKey('roles.id'), primary_key=True),
-    db.Column('permission_id', db.Integer, db.ForeignKey('permissions.id'), primary_key=True),
-)
-
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True, nullable=False)
     description = db.Column(db.String(255))
-    permissions = db.relationship('Permission', secondary=role_permissions, backref='roles', lazy='dynamic')
+    permissions = db.Column(db.String(255))
 
     def has_perm(self, code: str) -> bool:
-        return self.permissions.filter_by(code=code).first() is not None
-
-class Permission(db.Model):
-    __tablename__ = 'permissions'
-    id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String(64), unique=True, nullable=False)  # e.g., 'user.create', 'user.update', 'user.deactivate'
+        if not self.permissions:
+            return False
+        return code in self.permissions.split(',')
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
