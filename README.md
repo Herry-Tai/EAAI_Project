@@ -4,4 +4,4 @@
 
 ## First-Time Setup
 1) run "py -m pip install -r requirements.txt" to install the libraries.
-2) run "py seed.py" to Initialize the database and admin account.
+2) run "py seed.py" to Initialize the database and the accounts (admin & user).
