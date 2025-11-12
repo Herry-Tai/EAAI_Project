@@ -8,3 +8,5 @@
 
 ## Video
 tool1.MOV = Full classes | tool2.MOV = One by one | tool3.MOV = Checking missing
+The videos need to download from google drive.
+https://drive.google.com/drive/folders/1EapjepP3TpfFzEfvoaxWV9kHSXxZrrth
