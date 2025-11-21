@@ -23,9 +23,9 @@
     {% if current_user.is_authenticated %}
       <a href="{{ url_for('main.users_list') }}">Users</a>
       <a href="{{ url_for('main.roles_list') }}">Roles</a>
-      <form style="display:inline" action="{{ url_for('auth.logout') }}" method="post">
-        <button type="submit">Logout</button>
-      </form>
+      <a href="{{ url_for('main.detector') }}">Detect</a>
+      <a href="{{ url_for('main.report') }}">Report</a>
+      <a href="{{ url_for('auth.logout') }}">Logout</a>
     {% else %}
       <a href="{{ url_for('auth.login') }}">Login</a>
     {% endif %}

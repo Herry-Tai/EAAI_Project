@@ -21,7 +21,7 @@ def login():
             return redirect(url_for('main.dashboard'))
     return render_template('login.html', form=form)
 
-@auth_bp.route('/logout', methods=['POST'])
+@auth_bp.route('/logout', methods=['GET', 'POST'])
 def logout():
     logout_user()
     return redirect(url_for('auth.login'))
